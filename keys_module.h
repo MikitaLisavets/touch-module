@@ -17,3 +17,5 @@ void onPress(int index) {
 void onRelease(int index) {
   Keyboard.release(VALUES[index]);
 }
+
+void loopCallback() {}
