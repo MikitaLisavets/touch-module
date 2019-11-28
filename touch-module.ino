@@ -1,7 +1,8 @@
 #include "Wire.h"
 #include "Adafruit_MPR121.h"
+#include "keys_module.h"
 //#include "MIDIUSB.h"
-#include "Keyboard.h"
+
 
 #ifndef _BV
 #define _BV(bit) (1 << (bit)) 
@@ -13,10 +14,6 @@ Adafruit_MPR121 capRight = Adafruit_MPR121();
 const int START_NOTE = 36;
 const int SHIFT = 12;
 const int BRIGHTNESS = 50;
-const int PIN_COUNT = 24;
-const int KEYBOARD_VALUES[PIN_COUNT] = {
-  'a', 'w', 's', 'e', 'd', 'f', 't', 'g', 'y', 'h', 'u', 'j', 'k', 'o', 'l', 'p', ';', 'z', 'x', ' ', KEY_UP_ARROW, KEY_DOWN_ARROW, KEY_LEFT_ARROW, KEY_RIGHT_ARROW
-};
 
 const int R = 4;
 const int LED_POWER = 5;
@@ -29,7 +26,7 @@ uint16_t lasttouchedLeft = 0;
 uint16_t lasttouchedRight = 0;
 
 void setup() {
-  Keyboard.begin();
+  moduleInit();
 
   pinMode(LED_POWER, OUTPUT);
   pinMode(R, OUTPUT);
@@ -65,12 +62,14 @@ void doAction(bool isLeft, uint16_t currtouched, uint16_t lasttouched) {
     index = isLeft ? i + SHIFT : i;
     if ((currtouched & _BV(i)) && !(lasttouched & _BV(i)) ) {
 //      noteOn(0, index + START_NOTE, 127);
-      Keyboard.press(KEYBOARD_VALUES[index]);
+
+
+      onPress(index);
       lightOn(index < 8 ? HIGH : LOW, index >= 8 && index < 16 ? HIGH : LOW, index >= 16 ? HIGH : LOW);
     }
     if (!(currtouched & _BV(i)) && (lasttouched & _BV(i)) ) {
 //      noteOff(0, index + START_NOTE, 127);
-      Keyboard.release(KEYBOARD_VALUES[index]);
+      onRelease(index);
       lightOff();
     }
 //    MidiUSB.flush();
